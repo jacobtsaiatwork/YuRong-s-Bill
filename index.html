@@ -289,10 +289,6 @@
         <label class="text-xs text-slate-500">Google Apps Script Web App URL</label>
         <input type="text" id="setting-api-url" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 mt-1 outline-none focus:ring-2 focus:ring-emerald-500" placeholder="https://script.google.com/macros/s/.../exec">
       </div>
-      <div>
-        <label class="text-xs text-slate-500">API_SECRET_TOKEN (鑑權代碼)</label>
-        <input type="password" id="setting-api-token" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 mt-1 outline-none focus:ring-2 focus:ring-emerald-500" placeholder="輸入當初設定在 GAS 的安全 Token">
-      </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeApiModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg">取消</button>
         <button onclick="saveApiSettings()" class="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg">儲存並重新整理</button>
@@ -301,9 +297,8 @@
   </div>
 
   <script>
-    // 預設後端配置（固定寫死，若使用者未自訂則預設採用此配置）
+    // 預設後端配置（固定寫死，無須任何 Token 鑑權）
     const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwWTmYYpFKwTeKFXD-qRu-PEbVffM-D1iIRWg4bX-GZUdCC23eOv7umQCvl-LiBBqyi/exec";
-    const DEFAULT_API_TOKEN = "0131";
 
     // 1. 六大分類專用顏色配對表
     const CATEGORY_COLORS = {
@@ -329,18 +324,14 @@
 
     function initSettings() {
       const savedUrl = localStorage.getItem("EXPENSE_API_URL") || DEFAULT_API_URL;
-      const savedToken = localStorage.getItem("EXPENSE_API_TOKEN") || DEFAULT_API_TOKEN;
       if (savedUrl) document.getElementById("setting-api-url").value = savedUrl;
-      if (savedToken) document.getElementById("setting-api-token").value = savedToken;
     }
 
     function openApiModal() { document.getElementById("api-modal").classList.remove("hidden"); }
     function closeApiModal() { document.getElementById("api-modal").classList.add("hidden"); }
     function saveApiSettings() {
       const url = document.getElementById("setting-api-url").value.trim();
-      const token = document.getElementById("setting-api-token").value.trim();
       localStorage.setItem("EXPENSE_API_URL", url);
-      localStorage.setItem("EXPENSE_API_TOKEN", token);
       closeApiModal();
       fetchData();
     }
@@ -354,15 +345,13 @@
       }
     }
 
-    // 2. 資料獲取核心（完美支援 GAS 矩陣二維陣列）
+    // 2. 資料獲取核心（免 Token 直接請求）
     async function fetchData() {
       const apiUrl = localStorage.getItem("EXPENSE_API_URL") || DEFAULT_API_URL;
-      const apiToken = localStorage.getItem("EXPENSE_API_TOKEN") || DEFAULT_API_TOKEN;
 
       document.getElementById("conn-status").textContent = "同步中...";
       try {
-        const fullUrl = `${apiUrl}${apiUrl.includes('?') ? '&' : '?'}token=${encodeURIComponent(apiToken || '')}`;
-        const res = await fetch(fullUrl, { redirect: "follow" });
+        const res = await fetch(apiUrl, { redirect: "follow" });
         const json = await res.json();
 
         // 處理 GAS 的 details 矩陣資料: [["時間", "項目", "分類", "金額", "月份"], [...], ...]
