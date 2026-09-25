@@ -301,6 +301,10 @@
   </div>
 
   <script>
+    // 預設後端配置（固定寫死，若使用者未自訂則預設採用此配置）
+    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbwWTmYYpFKwTeKFXD-qRu-PEbVffM-D1iIRWg4bX-GZUdCC23eOv7umQCvl-LiBBqyi/exec";
+    const DEFAULT_API_TOKEN = "0131";
+
     // 1. 六大分類專用顏色配對表
     const CATEGORY_COLORS = {
       "餐飲": "#F59E0B", // 琥珀橙
@@ -324,8 +328,8 @@
     });
 
     function initSettings() {
-      const savedUrl = localStorage.getItem("EXPENSE_API_URL");
-      const savedToken = localStorage.getItem("EXPENSE_API_TOKEN");
+      const savedUrl = localStorage.getItem("EXPENSE_API_URL") || DEFAULT_API_URL;
+      const savedToken = localStorage.getItem("EXPENSE_API_TOKEN") || DEFAULT_API_TOKEN;
       if (savedUrl) document.getElementById("setting-api-url").value = savedUrl;
       if (savedToken) document.getElementById("setting-api-token").value = savedToken;
     }
@@ -352,15 +356,8 @@
 
     // 2. 資料獲取核心（完美支援 GAS 矩陣二維陣列）
     async function fetchData() {
-      const apiUrl = localStorage.getItem("EXPENSE_API_URL");
-      const apiToken = localStorage.getItem("EXPENSE_API_TOKEN");
-
-      if (!apiUrl) {
-        document.getElementById("conn-status").textContent = "請設定 API 網址";
-        document.getElementById("conn-status").classList.replace("text-emerald-400", "text-amber-400");
-        openApiModal();
-        return;
-      }
+      const apiUrl = localStorage.getItem("EXPENSE_API_URL") || DEFAULT_API_URL;
+      const apiToken = localStorage.getItem("EXPENSE_API_TOKEN") || DEFAULT_API_TOKEN;
 
       document.getElementById("conn-status").textContent = "同步中...";
       try {
