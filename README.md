@@ -1,4 +1,4 @@
-# 🤖 line-expense-dashboard | 記帳本 PRO
+# 🤖 YuRong-s-Bill | 記帳本 PRO
 
 > **LINE 智慧個人記帳助理 + Google Gemini 多模態 AI + Google Sheets 雲端資料庫 + Cloudflare 前端視覺化儀表板**
 
@@ -210,7 +210,7 @@ flowchart LR
 ## 📂 專案目錄結構 (Project Structure)
 
 ```text
-line-expense-dashboard/
+YuRong-s-Bill/
 ├── Code.gs         # Google Apps Script 核心後端腳本 (LINE Webhook + Gemini Vision + Sheets API)
 ├── index.html      # 現代化財務數據分析儀表板 (SPA 前端，適用 Cloudflare Pages)
 └── README.md       # 專案詳細說明與架構部署手冊
